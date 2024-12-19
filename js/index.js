@@ -4,8 +4,20 @@ let tokenAccess = ""
 
 // type submit ="..."
 const btnBuscar = document.querySelector("button")//no ho fem per id, és fa per etiquetes
+const results = document.querySelector(".results");
 
 
+const renderizaTrack = function (infTrack) {
+  results.textContent = "";
+  for (let i = 0; i < infTrack.length; i++) {
+    const Objdiv = document.createElement("div")
+    Objdiv.className="track";
+    Objdiv.innerHTML=`<img src=${infTrack[i].album.images[0].url} />
+                      <h1>${infTrack[i].name}</h1>`;
+    results.appendChild(Objdiv);
+    
+  }
+}
 /////////////////////////////////// PUNT 2 //////////////////////////////////////
 const getSpotifyAccessToken = function (clientId, clientSecret) {
   // Url de l'endpont de spotify
@@ -19,16 +31,6 @@ const getSpotifyAccessToken = function (clientId, clientSecret) {
     Authorization: `Basic ${credentials}`,
     "Content-Type": "application/x-www-form-urlencoded",
   };
-
-  const renderizaTrack = function (infTrack) {
-    for (let i = 0; i < infTrack.length; i++) {
-      const Objdiv = document.createElement("div")
-      Objdiv.className="track";
-      Objdiv.innerHTML=`<img src=${infTrack[i].album.images[0].url} />`
-      Objdiv.textContent = infTrack[i].name;
-      ObjResult.appendChild(Objdiv);
-    }
-  }
 // --------------------------------------------------------------------------------------------
   fetch(url, {
     method: "POST",
