@@ -1,14 +1,111 @@
-body{
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
     background-color: #d4f4c9;
+}
+* {
+    box-sizing: border-box;
 }
 
 .results{
 display: flex;
 margin-top: 30px;
-}
+color: black;
+display:flex;
+flex-wrap: wrap;
+gap:1%;
+overflow: auto;
 
+}
 
 .track{
     border: 1px solid black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    margin:0;
+    padding:1.5%;
+    display: block;
+    width:20%;
+    height: auto;
+    background-color: white;
+    border-radius: 3%;
+    justify-content: center;
+    border: 2px solid transparent;
     
+}
+.imgs {
+    width: 100%;
+    height: auto;
+}
+
+
+h1{
+    color: #0ab049;
+}
+
+.buscador > #buscador{
+    border-color: #11b54c;
+    border-radius: 3px;
+    margin-right: 10px;
+    padding: 5px;
+    width: 35%;
+}
+.buscador > #buscar{
+    background-color: #047c2e;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-color: #007323;
+    border-radius: 3px;
+    color: white;
+}
+.buscador > #borrar {
+    margin-left: 10px;
+    background-color: #047c2e;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-color: #007323;
+    border-radius: 3px;
+    color: white;
+}
+
+.columnas {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+}
+
+.info {
+    width: 70%;
+    padding: 20px;
+    color: white;
+    box-sizing: border-box;
+    
+}
+
+.columna2{
+    width: 21%;
+    margin-top: 8%;
+}
+
+.cuadrado_derecha{
+    box-sizing: border-box;
+    overflow-y: auto;
+    border: 1px solid black;
+    margin-top: 30px;
+    border-radius: 3%;
+    height: 60%;
+    justify-content: center;
+    display: flex;
+}
+.informacion{
+    text-align: center;
 }

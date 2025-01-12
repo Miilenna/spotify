@@ -6,14 +6,21 @@ let tokenAccess = ""
 const btnBuscar = document.querySelector("button")//no ho fem per id, és fa per etiquetes
 const results = document.querySelector(".results");
 
+const getInfoArtist = function (idArtist){
+  console.log(idArtist);
+}
+
 
 const renderizaTrack = function (infTrack) {
   results.textContent = "";
   for (let i = 0; i < infTrack.length; i++) {
     const Objdiv = document.createElement("div")
     Objdiv.className="track";
-    Objdiv.innerHTML=`<img src=${infTrack[i].album.images[0].url} />
-                      <h1>${infTrack[i].name}</h1>`;
+    Objdiv.innerHTML=`<img src=${infTrack[i].album.images[0].url} class="imgs"/>
+                      <h2>${infTrack[i].name}</h2>`;
+    Objdiv.addEventListener("click", function(){
+      getInfoArtist(infTrack[i].artists[0].id);
+    })
     results.appendChild(Objdiv);
     
   }
