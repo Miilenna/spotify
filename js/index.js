@@ -1,83 +1,106 @@
-import{clientId, clientSecret} from  "../env/client.js" //tirem dos carpetes enrere
+import { clientId, clientSecret } from "../env/client.js"; // Dos carpetes enrere
 
-let tokenAccess = ""
+let tokenAccess = "";
+let offset = 0; // Para la paginación
+let totalResults = 0;
 
-// type submit ="..."
-const btnBuscar = document.querySelector("button")//no ho fem per id, és fa per etiquetes
+// Elementos del DOM
+const btnBuscar = document.querySelector("#buscar");
+const btnBorrar = document.querySelector("#borrar");
+const inputSearch = document.querySelector("#buscador");
 const results = document.querySelector(".results");
+const infoArtista = document.querySelector(".cuadrado_derecha");
+const btnCargarMas = document.createElement("button");
+btnCargarMas.className = "cargar_canç";
+const infocanç = document.querySelector("#info");
 
-const getInfoArtist = function (idArtist){
-  console.log(idArtist);
-}
-
-
-const renderizaTrack = function (infTrack) {
-  results.textContent = "";
-  for (let i = 0; i < infTrack.length; i++) {
-    const Objdiv = document.createElement("div")
-    Objdiv.className="track";
-    Objdiv.innerHTML=`<img src=${infTrack[i].album.images[0].url} class="imgs"/>
-                      <h2>${infTrack[i].name}</h2>`;
-    Objdiv.addEventListener("click", function(){
-      getInfoArtist(infTrack[i].artists[0].id);
-    })
-    results.appendChild(Objdiv);
-    
-  }
-}
-/////////////////////////////////// PUNT 2 //////////////////////////////////////
-const getSpotifyAccessToken = function (clientId, clientSecret) {
-  // Url de l'endpont de spotify
-  const url = "https://accounts.spotify.com/api/token";
-  // ClientId i ClienSecret generat en la plataforma de spotify
-  const credentials = btoa(`${clientId}:${clientSecret}`);
-
-
-  //Es crear un header on se li passa les credencials
-  const header = {
-    Authorization: `Basic ${credentials}`,
-    "Content-Type": "application/x-www-form-urlencoded",
-  };
-// --------------------------------------------------------------------------------------------
+// Función para obtener información del artista
+const getInfoArtist = function (idArtist) {
+  const url = `https://api.spotify.com/v1/artists/${idArtist}`;
   fetch(url, {
-    method: "POST",
-    headers: header,
-    body: "grant_type=client_credentials", // Paràmetres del cos de la sol·licitud
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${tokenAccess}`,
+    },
   })
     .then((response) => {
-      // Controlar si la petició ha anat bé o hi ha alguna error.
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
-      return response.json(); // Retorna la resposta com JSON
+      return response.json();
     })
     .then((data) => {
-      // Al data retorna el token d'accés que necessitarem
-      // Haurem d’habilitar els botons “Buscar” i “Borrar”
-      tokenAccess = data.access_token
-      console.log(tokenAccess);
+      // Mostramos la información del artista en el DOM
+      infoArtista.innerHTML = `
+        <div class="artist-info">
+          <img src="${data.images[0]?.url}" alt="${data.name}" class="imgsInfo" />
+          <h2>${data.name}</h2>
+          <p>Popularitat: ${data.popularity}</p>
+          <p>Gèneres: ${data.genres.join(", ")}</p>
+          <p>Seguidors: ${data.followers.total}</p>
+        </div>
+      `;
+    
+
+      // Obtener canciones populares
+      const topTracksUrl = `https://api.spotify.com/v1/artists/${idArtist}/top-tracks?market=ES`;
+      fetch(topTracksUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${tokenAccess}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((topData) => {
+          const tracks = topData.tracks.slice(0, 3);
+          infocanç.innerHTML = "";
+          tracks.forEach((track, index) => {
+            infocanç.innerHTML += `<p>${index + 1}. ${track.name}</p>`;
+          });
+        });
     })
-    .catch((error) => {
-      // SI durant el fetch hi ha hagut algun error arribarem aquí.
-      console.error("Error a l'obtenir el token:", error);
-    });
+    .catch((error) => console.error("Error al obtenir informació de l'artista:", error));
 };
-getSpotifyAccessToken(clientId, clientSecret);
-console.log(clientId, clientSecret);
 
-//-------------------------------------------------------------------------------------------
-const btonSearch = document.querySelector("#buscar");
-const inputSearch = document.querySelector("#buscador");
+// Renderizar canciones
+const renderizaTrack = function (infTrack) {
+  for (let i = 0; i < infTrack.length; i++) {
+    const Objdiv = document.createElement("div");
+    Objdiv.className = "track";
+    Objdiv.innerHTML = `
+      <img src="${infTrack[i].album.images[0]?.url}" class="imgs" />
+      <p><b>${infTrack[i].name}</b></p>
+      <p>Artista: ${infTrack[i].artists[0].name}</p>
+      <p>Album: ${infTrack[i].album.name}</p>
+      <button class="add-song">+ Afegir cançó</button>
+    `;
+    Objdiv.addEventListener("click", function () {
+      getInfoArtist(infTrack[i].artists[0].id);
+    });
+    Objdiv.querySelector(".add-song").addEventListener("click", function (e) {
+      e.stopPropagation();
+      const storedSongs = localStorage.getItem("songs") || "";
+      const updatedSongs = storedSongs ? `${storedSongs};${infTrack[i].id}` : infTrack[i].id;
+      localStorage.setItem("songs", updatedSongs);
+      alert("Cançó afegida al localStorage!");
+    });
+    results.appendChild(Objdiv);
+  }
+};
 
+// Función para buscar canciones
 const searchSpotifyTracks = function () {
-  // Definim l’endpoint, la query és el valor de búsqueda.
-  // Limitem la búsqueda a cançons i retornarà 12 resultats.
-  const searchUrl =
-    `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-      inputSearch.value
-    )}&type=track&limit=12`;
+  if (!inputSearch.value) {
+    return alert("Has d'introduir un nom d’una cançó.");
+  }
+  if (inputSearch.value.length < 2) {
+    return alert("Has d’introduir almenys 2 caràcters.");
+  }
 
-  // Al headers sempre s’ha de posar la mateixa informació.
+  const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+    inputSearch.value
+  )}&type=track&limit=12&offset=${offset}`;
+
   fetch(searchUrl, {
     method: "GET",
     headers: {
@@ -86,24 +109,75 @@ const searchSpotifyTracks = function () {
     },
   })
     .then((response) => {
-     // Controlem si la petició i la resposta han anat bé. 
       if (!response.ok) {
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
       return response.json();
     })
     .then((data) => {
-     console.log(data);
-     const infTrack = data.tracks.items;
-     // Data retorna tota la informació de la consulta de l’API
-     renderizaTrack(infTrack);
+      const infTrack = data.tracks.items;
+      const totalTracks = data.tracks.total; // Total de resultados disponibles en la API
+  
+      if (!infTrack.length) {
+        results.textContent = "No hi han resultats.";
+        return;
+      }
+  
+      totalResults += infTrack.length; // Actualizamos la cantidad de resultados cargados
+      renderizaTrack(infTrack);
+  
+      // Actualizamos el texto del botón con los resultados cargados y el total
+      btnCargarMas.textContent = `+ cançons (${totalResults} de ${totalTracks})`;
+  
+      if (totalResults < totalTracks) {
+        // Solo añadimos el botón si hay más canciones para cargar
+        results.appendChild(btnCargarMas);
+      } else {
+        // Si ya se han cargado todos los resultados, ocultamos el botón
+        btnCargarMas.remove();
+      }
     })
-    .catch((error) => {
-      console.error("Error al buscar cançons:", error);
-    });
+    .catch((error) => console.error("Error al buscar cançons:", error));
+  };  
+
+// Configurar botones
+btnBuscar.addEventListener("click", () => {
+  results.textContent = ""; // Limpiar resultados previos
+  offset = 0;
+  totalResults = 0;
+  searchSpotifyTracks();
+});
+
+btnBorrar.addEventListener("click", () => {
+  results.textContent = "Fes una nova búsqueda";
+  infoArtista.textContent = "Informació artista";
+  infocanç.textContent = "Informació cançons";
+});
+
+btnCargarMas.addEventListener("click", () => {
+  offset += 12;
+  searchSpotifyTracks();
+});
+
+// Obtener token de Spotify
+const getSpotifyAccessToken = function (clientId, clientSecret) {
+  const url = "https://accounts.spotify.com/api/token";
+  const credentials = btoa(`${clientId}:${clientSecret}`);
+  fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${credentials}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: "grant_type=client_credentials",
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      tokenAccess = data.access_token;
+      btnBuscar.disabled = false;
+      btnBorrar.disabled = false;
+    })
+    .catch((error) => console.error("Error a l'obtenir el token:", error));
 };
-btonSearch.addEventListener("click", searchSpotifyTracks);
 
-//-----------------------------------------------------------------------------------
-
-
+getSpotifyAccessToken(clientId, clientSecret);
