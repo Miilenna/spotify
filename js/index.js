@@ -13,6 +13,23 @@ const infoArtista = document.querySelector(".cuadrado_derecha");
 const btnCargarMas = document.createElement("button");
 btnCargarMas.className = "cargar_canç";
 const infocanç = document.querySelector("#info");
+const btnPlaylist = document.querySelector("#playlist");
+const URL = "https://accounts.spotify.com/authorize";
+const redirectUri = "http://127.0.0.1:5500/spotify/html/playlist.html";
+const scopes = "playlist-modify-private user-library-modify playlist-modify-public";
+
+btnPlaylist.addEventListener("click", function () {
+  const authUrl =
+  URL +
+  `?client_id=${clientId}` +
+  `&response_type=token` +
+  `&redirect_uri=${redirectUri}` +
+  `&scope=${scopes}`;
+
+
+  window.location.assign(authUrl);
+});
+
 
 // Función para obtener información del artista
 const getInfoArtist = function (idArtist) {
