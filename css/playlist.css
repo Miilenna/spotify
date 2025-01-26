@@ -1,0 +1,58 @@
+/*---------------------------GENERAL----------------------------------*/
+body{
+    background-color: #d4f4c9;
+}
+
+.contenedores{
+    display: flex;
+}
+
+/*---------------------------PLAYLISTS----------------------------------*/
+.playlists{ 
+    border-radius: 10px;
+    margin-top: 10px;
+    background-color: #93c483;
+    width: 250px;
+    height: 150px;
+}
+
+.playlists p {
+    padding: 10px;
+}
+
+.playlists #input{
+    margin-left: 10px;
+} 
+
+/*---------------------------CANÇONS----------------------------------*/
+.cançons {
+    background-color: #83c48f;
+    width: 370px;
+    height: 150px;
+    margin-left: 4px;
+    margin-top: 11px;
+    border-radius: 10px;
+}
+
+.cançons p {
+    padding: 10px;
+}
+/*---------------------------CANÇONS_SELEC----------------------------------*/
+.cançons_selec {
+    background-color: #83c48f;
+    margin-top: 11px;
+    margin-left: 4px;
+    width: 370px;
+    height: 150px;
+    border-radius: 10px;
+}
+
+.cançons_selec p {
+    padding: 10px;
+}
+/*--------------------------------------BOTONES------------------------------------*/
+#tornar{
+    background-color: #047c2e;
+    border-color:#047c2e;
+    color: white;
+}
