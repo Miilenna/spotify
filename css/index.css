@@ -62,6 +62,21 @@ h1 {
     border: 1px solid black;
 }
 
+#playlist{
+    background-color: #047c2e;
+    padding: 5px 10px;
+    border-color: #007323;
+    border-radius: 3px;
+    color: white;
+    border: 1px solid black;
+    margin-left: 10px;
+}
+
+#playlist:hover{
+    background-color: #74f39e;
+    color: black;
+}
+
 .buscador > #buscar:hover {
     background-color: #74f39e;
     color: black;
